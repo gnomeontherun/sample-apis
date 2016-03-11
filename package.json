@@ -1,0 +1,22 @@
+{
+  "name": "sample-api",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sample APIs",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gnomeontherun/sample-apis.git"
+  },
+  "author": "Jeremy Wilken <gnomation@gnomeontherun.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gnomeontherun/sample-apis/issues"
+  },
+  "homepage": "https://github.com/gnomeontherun/sample-apis#readme",
+  "dependencies": {
+    "cors": "2.7.1",
+    "express": "4.13.1",
+    "request": "2.67.0"
+  }
+}
