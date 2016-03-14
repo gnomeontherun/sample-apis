@@ -30,9 +30,19 @@ router.get('/civic/places', function(req, res) {
 
     // Types: city_hall|courthouse|fire_station|hospital|library|local_government_office|museum|park|police|post_office
     // Query: city hall|courthouse|fire station|hospital|library|museum|park|police|post office
-    // Radius:
 
-    request.get(location + '?type=' + req.query.type + '&query=&location=' + req.query.location + '&radius=10000&key=' + key, {json: true}, function(err, response, body) {
+    var params = [];
+    if (req.query.token) {
+      params.push('pagetoken=' + req.query.token);
+    } else {
+      params.push('type=' + req.query.type);
+      params.push('query=');
+      params.push('location=' + req.query.location);
+      params.push('radius=100000');
+    }
+    params.push('key=' + key);
+
+    request.get(location + '?' + params.join('&'), {json: true}, function(err, response, body) {
       res.status(response.statusCode).send(body);
     });
   } else {
