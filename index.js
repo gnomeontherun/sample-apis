@@ -15,7 +15,7 @@ var key = process.env.GOOGLE_KEY;
 // Express App
 var app = express();
 
-// Enable CORS
+// Enabl`e CORS
 app.use(cors());
 
 app.set('port', (process.env.PORT || 5000));
@@ -24,29 +24,64 @@ var router = express.Router();
 
 // Endpoint to load places
 router.get('/civic/places', function(req, res) {
-  if (req.query.location && req.query.type) {
-
-    // VALIDATE TYPE AND LOCATION
-
-    // Types: city_hall|courthouse|fire_station|hospital|library|local_government_office|museum|park|police|post_office
-    // Query: city hall|courthouse|fire station|hospital|library|museum|park|police|post office
+  var validOptions = ['hospital', 'library', 'museum', 'park'];
+  
+  function isValid() {
+    // Ensure location is attached, and not super long
+    if (!req.query.location || !req.query.location.length > 20) {
+      return false;
+    }
+    // Ensure type or query exists
+    else if (!req.query.query && !req.query.type) {
+      return false;
+    }
+    // If type, ensure it is valid
+    else if (req.query.type) {
+      var valid = false;
+      for (var i = 0; i < validOptions.length; i++) {
+        if (req.query.type === validOptions[i]) {
+          valid = true;
+        }
+      }
+      return valid;
+    }
+    else if (req.query.query) {
+      var valid = true;
+      var query = req.query.query.split('|');
+      for (var i = 0; i < query.length; i++) {
+        if (validOptions.indexOf(query[i]) < 0) {
+          valid = false;
+        }
+      }
+      return valid;
+    } else {
+      return false;
+    }
+  }
+ 
+  
+  // Validate types and inputs
+  if (isValid()) {
 
     var params = [];
     if (req.query.token) {
       params.push('pagetoken=' + req.query.token);
     } else {
-      params.push('type=' + req.query.type);
-      params.push('query=');
       params.push('location=' + req.query.location);
       params.push('radius=100000');
     }
     params.push('key=' + key);
+    if (req.query.type) {
+      params.push('type=' + req.query.type);
+    } else {
+      params.push('query=' + req.query.query);
+    }
 
     request.get(location + '?' + params.join('&'), {json: true}, function(err, response, body) {
       res.status(response.statusCode).send(body);
     });
   } else {
-    res.status(400).send({message: 'The request requires a location. Try adding "?location={lat},{lng}" to the request.'});
+    res.status(400).send({message: 'The request is invalid. Please check your parameters.'});
   }
 });
 
@@ -63,7 +98,7 @@ router.get('/civic/photo', function(req, res) {
   }
 });
 
-// Endpoint to load photos
+// Endpoint to load place
 router.get('/civic/place', function(req, res) {
   if (req.query.place_id) {
     request.get(place + '?placeid=' + req.query.place_id + '&key=' + key, {json: true}, function(err, response, body) {
