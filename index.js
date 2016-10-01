@@ -111,12 +111,12 @@ router.get('/civic/place', function(req, res) {
 
 // Endpoint to load geolocation
 router.get('/civic/geolocation', function(req, res) {
-  if (req.query.address) {
-    request.get(geolocation + '?address=' + req.query.address + '&key=' + key, {json: true}, function(err, response, body) {
+  if (req.query.latlng) {
+    request.get(geolocation + '?latlng=' + req.query.latlng + '&key=' + key, {json: true}, function(err, response, body) {
       res.status(response.statusCode).send(body);
     });
   } else {
-    res.status(400).send({message: 'The request requires a zipcode. Try adding "?zipcode=12345" to the request.'});
+    res.status(400).send({message: 'The request requires a latlng. Try adding "?latlng=12345,12345" to the request.'});
   }
 });
 
